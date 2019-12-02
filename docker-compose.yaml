@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  pubsub:
+    image: messagebird/gcloud-pubsub-emulator:latest
+    ports:
+      - 8681:8681
+    environment:
+      PUBSUB_PROJECT1: project,topic:subscription
+  publisher:
+    build: .
+    command:
+      - "node"
+      - "build/main.js"
+      - "publish"
+    environment:
+      PUBSUB_EMULATOR_HOST: http://pubsub:8681
+  subscriber:
+    build: .
+    command:
+      - "node"
+      - "build/main.js"
+      - "subscribe"
+    environment:
+      PUBSUB_EMULATOR_HOST: http://pubsub:8681

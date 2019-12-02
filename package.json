@@ -1,0 +1,16 @@
+{
+  "name": "gpubsub",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/pubsub": "^1.1.5",
+    "backpack-core": "^0.8.4",
+    "dotenv": "^8.2.0",
+    "yargs": "^15.0.2"
+  },
+  "scripts": {
+    "start": "backpack dev",
+    "build": "backpack build"
+  }
+}
