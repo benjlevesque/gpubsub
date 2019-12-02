@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: subscriber
+  labels:
+    name: subscriber
+spec:
+  volumes:
+    - name: google-cloud-key
+      secret:
+        secretName: pubsubkey
+  containers:
+    - name: subscriber
+      image: benjlevesque/gpubsub
+      imagePullPolicy: Always
+      args:
+        - "node"
+        - "build/main.js"
+        - "subscribe"
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+      env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        - name: SUBSCRIPTION
+          value: request-api-subscription
+        - name: GOOGLE_PROJECT_ID
+          value: request-240714
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: publisher
+  labels:
+    name: publisher
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: google-cloud-key
+          secret:
+            secretName: pubsubkey
+      containers:
+        - name: publisher
+          image: benjlevesque/gpubsub
+          imagePullPolicy: Always
+          args:
+            - "node"
+            - "build/main.js"
+            - "publish"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
+            - name: TOPIC
+              value: request-api-topic
+            - name: GOOGLE_PROJECT_ID
+              value: request-240714
